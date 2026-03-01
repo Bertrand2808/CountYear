@@ -1,139 +1,188 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Year Counter</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Year Progress 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Syne+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0d0f12;
+      --card: #16181e;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --accent-passed: #f87171;
+      --accent-remain: #4ade80;
+      --gradient-bar: linear-gradient(90deg, #f87171, #fb923c, #fbbf24);
+    }
 
-  body {
-    background: transparent;
-    font-family: 'Syne', sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 16px;
-  }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  .container {
-    width: 100%;
-    max-width: 680px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', system-ui, sans-serif;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(248,113,113,0.04) 0%, transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(74,222,128,0.04) 0%, transparent 35%);
+    }
 
-  .card {
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 20px 24px;
-    position: relative;
-    overflow: hidden;
-  }
+    .container {
+      width: 100%;
+      max-width: 720px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
 
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 28px 32px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-  .card.passed::before { background: #ff4d4d; }
-  .card.remaining::before { background: #4dff91; }
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.7);
+    }
 
-  .label {
-    font-family: 'Syne Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: #666;
-    margin-bottom: 8px;
-  }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: var(--gradient-bar);
+      opacity: 0.8;
+    }
 
-  .number {
-    font-size: 52px;
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -2px;
-  }
+    .card.passed::before  { background: var(--accent-passed); }
+    .card.remaining::before { background: var(--accent-remain); }
 
-  .card.passed .number { color: #ff4d4d; }
-  .card.remaining .number { color: #4dff91; }
+    .label {
+      font-family: 'Syne Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
 
-  .sub {
-    font-family: 'Syne Mono', monospace;
-    font-size: 11px;
-    color: #444;
-    margin-top: 8px;
-  }
+    .number {
+      font-size: clamp(3.8rem, 12vw, 5.8rem);
+      font-weight: 800;
+      line-height: 0.92;
+      letter-spacing: -3px;
+    }
 
-  .progress-bar {
-    grid-column: 1 / -1;
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 20px 24px;
-    position: relative;
-    overflow: hidden;
-  }
+    .card.passed .number { color: var(--accent-passed); }
+    .card.remaining .number { color: var(--accent-remain); }
 
-  .bar-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
+    .sub {
+      font-family: 'Syne Mono', monospace;
+      font-size: 13px;
+      color: #475569;
+      margin-top: 10px;
+      font-weight: 400;
+    }
 
-  .bar-label .label { margin: 0; }
+    .progress-section {
+      grid-column: 1 / -1;
+      background: var(--card);
+      border-radius: 16px;
+      padding: 28px 32px;
+      box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6);
+    }
 
-  .percent {
-    font-family: 'Syne Mono', monospace;
-    font-size: 13px;
-    color: #888;
-  }
+    .bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 16px;
+    }
 
-  .bar-track {
-    width: 100%;
-    height: 6px;
-    background: #2a2a2a;
-    border-radius: 3px;
-    overflow: hidden;
-  }
+    .bar-header .label {
+      margin: 0;
+      font-size: 13px;
+    }
 
-  .bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    background: linear-gradient(90deg, #ff4d4d, #ff914d);
-    transition: width 1s ease;
-    position: relative;
-  }
+    .percent {
+      font-family: 'Syne Mono', monospace;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dim);
+    }
 
-  .bar-fill::after {
-    content: '';
-    position: absolute;
-    right: 0; top: 0; bottom: 0;
-    width: 20px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15));
-  }
+    .bar-track {
+      height: 10px;
+      background: #1e293b;
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+    }
 
-  .message {
-    grid-column: 1 / -1;
-    text-align: center;
-    font-family: 'Syne Mono', monospace;
-    font-size: 11px;
-    color: #333;
-    letter-spacing: 0.08em;
-    padding: 4px 0;
-  }
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--gradient-bar);
+      border-radius: 5px;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
 
-  .message span {
-    color: #555;
-  }
-</style>
+    .bar-fill::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+      animation: shine 3s infinite linear;
+    }
+
+    @keyframes shine {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(300%); }
+    }
+
+    .message {
+      grid-column: 1 / -1;
+      text-align: center;
+      font-family: 'Syne Mono', monospace;
+      font-size: 13px;
+      color: #64748b;
+      letter-spacing: 0.06em;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    .message span {
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+
+    @media (max-width: 500px) {
+      .container { gap: 12px; }
+      .card, .progress-section { padding: 24px 20px; }
+      .number { font-size: clamp(3.2rem, 10vw, 4.8rem); }
+    }
+  </style>
 </head>
 <body>
+
 <div class="container">
   <div class="card passed">
     <div class="label">Jours écoulés</div>
@@ -147,13 +196,13 @@
     <div class="sub" id="remaining-sub">— semaines</div>
   </div>
 
-  <div class="progress-bar">
-    <div class="bar-label">
+  <div class="progress-section">
+    <div class="bar-header">
       <div class="label">Progression <span id="year">2026</span></div>
       <div class="percent" id="percent">—%</div>
     </div>
     <div class="bar-track">
-      <div class="bar-fill" id="bar" style="width: 0%"></div>
+      <div class="bar-fill" id="bar"></div>
     </div>
   </div>
 
@@ -161,39 +210,46 @@
 </div>
 
 <script>
-  function compute() {
+  function updateYearProgress() {
     const now = new Date();
     const year = now.getFullYear();
     const start = new Date(year, 0, 1);
-    const end = new Date(year + 1, 0, 1);
-    const total = (end - start) / 86400000;
-    const passed = Math.floor((now - start) / 86400000);
-    const remaining = total - passed;
-    const pct = (passed / total * 100).toFixed(1);
+    const end   = new Date(year + 1, 0, 1);
 
-    document.getElementById('passed').textContent = passed;
-    document.getElementById('remaining').textContent = remaining;
-    document.getElementById('passed-sub').textContent = Math.floor(passed / 7) + ' semaines';
-    document.getElementById('remaining-sub').textContent = Math.floor(remaining / 7) + ' semaines';
-    document.getElementById('percent').textContent = pct + '%';
-    document.getElementById('year').textContent = year;
+    const msTotal     = end - start;
+    const msPassed    = now - start;
+    const daysTotal   = msTotal   / 86400000;
+    const daysPassed  = Math.floor(msPassed / 86400000);
+    const daysLeft    = Math.floor(daysTotal - daysPassed);
+
+    const pct = (daysPassed / daysTotal) * 100;
+    const pctRounded = pct.toFixed(1);
+
+    document.getElementById('passed').textContent    = daysPassed;
+    document.getElementById('remaining').textContent = daysLeft;
+    document.getElementById('passed-sub').textContent   = Math.floor(daysPassed / 7) + ' semaines';
+    document.getElementById('remaining-sub').textContent = Math.floor(daysLeft   / 7) + ' semaines';
+
+    document.getElementById('year').textContent   = year;
+    document.getElementById('percent').textContent = pctRounded + '%';
     document.getElementById('bar').style.width = pct + '%';
 
+    // Messages motivants
     const messages = [
-      { max: 10, text: "L'année vient de commencer. Pose les bases." },
-      { max: 25, text: "Premier trimestre. Les habitudes se forment maintenant." },
-      { max: 50, text: "Mi-parcours. Est-ce que tu tiens le rythme ?" },
-      { max: 75, text: "Troisième trimestre. Reste constant." },
-      { max: 90, text: "Ligne droite finale. Ne lâche rien." },
-      { max: 100, text: "Dernière ligne droite. Finis fort." },
+      { max: 10,  text: "L'année démarre tout juste — pose des fondations solides." },
+      { max: 25,  text: "Q1 en cours — les habitudes d'aujourd'hui font l'année de demain." },
+      { max: 50,  text: "Mi-parcours — tiens le cap, tu es dans le bon rythme ?" },
+      { max: 75,  text: "Q3 — la constance paie maintenant plus que jamais." },
+      { max: 90,  text: "Ligne droite — accélère, ne lâche rien !" },
+      { max: 100, text: "Derniers mètres — termine cette année en force !" }
     ];
 
     const msg = messages.find(m => pct <= m.max) || messages[messages.length - 1];
     document.getElementById('message').innerHTML = `<span>${msg.text}</span>`;
   }
 
-  compute();
-  setInterval(compute, 60000);
+  updateYearProgress();
+  setInterval(updateYearProgress, 60000); // mise à jour toutes les minutes
 </script>
 </body>
 </html>
